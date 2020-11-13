@@ -72,8 +72,6 @@ class ScreenBuffer:
             self.draw(sprite)
 
 
-
-
 class Engine:
     def __init__(self, height, width):
 
@@ -88,6 +86,7 @@ class Engine:
         self.buffers = [self.ui, self.bg, self.fg]
 
         self.lines = []
+        self.clear_screen()
 
     def render(self):
 
@@ -105,7 +104,6 @@ class Engine:
                 for w,c in enumerate(r):
                     if c == None:
                         continue
-
                     self.lines[h + b.v_offset][w + b.h_offset] = c
 
         # Replace all None with ' ' for final print
@@ -118,8 +116,11 @@ class Engine:
         l = ''
         for line in self.lines:
             l += ''.join(line) + '\n'
-        print(l, end='\r', flush=True)
-        # sys.stdout.write(f'{l}\r')
+        # Reset cursor position
+        for i in range(self.height-1):
+            sys.stdout.write("\033[A")
+        # Print :)
+        print(l[0:-1], end='\r', flush=True)
 
     def clear_buffer(self):
         for buffer in self.buffers:
@@ -127,13 +128,9 @@ class Engine:
 
     def clear_screen(self):
         # clear screen
-        # sys.stdout.flush()
         os.system('cls' if os.name == 'nt' else 'clear')
 
     def tick(self):
         # Empty the buffer
         self.clear_buffer()
-        # Clear screen
-        # self.clear_screen()
-        # input('paused')
         self.render()
