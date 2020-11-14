@@ -70,7 +70,7 @@ class Game:
     def __init__(self):
         self.engine = Engine(24, 68)
 
-        gravity = 1
+        gravity = 0.25
         maxfallspeed = 200
         maxspeed = 80
         jumpforce = 300
@@ -78,16 +78,16 @@ class Game:
 
         # Sprites
         ui = Sprite('ui', 0, 0)
-        character = Character(2, 8)
         background = Sprite('background', 0, 0)
         cloud = Sprite('cloud', 0, 0)
-        ground = Sprite('ground', 0, 16)
+        ground = Sprite('ground', 0, 15)
+        character = Character(2, 8)
 
         self.engine.ui.sprites.append(ui)
         self.engine.bg.sprites.append(background)
         self.engine.bg.sprites.append(cloud)
-        self.engine.fg.sprites.append(character)
         self.engine.fg.sprites.append(ground)
+        self.engine.fg.sprites.append(character)
 
         kb = Controller()
 
