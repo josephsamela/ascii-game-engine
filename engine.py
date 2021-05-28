@@ -2,11 +2,13 @@ import os
 import sys
 
 class Sprite:
-    def __init__(self, filename, pos_x, pos_y):
+    def __init__(self, filename, pos_x, pos_y, invert=False):
         self.filename = filename
         self.pos_x = pos_x
         self.pos_y = pos_y
-
+        
+        self.invert = invert
+        
         self.texture = []
         self.load_texture(filename)
 
@@ -25,6 +27,8 @@ class Sprite:
                     if char in ['\n', '\r']:
                         continue
                     l.append(char)
+                if self.invert:
+                    l = l[::-1]
                 self.texture.append(l)
 
 

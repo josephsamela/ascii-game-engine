@@ -17,47 +17,63 @@ class Character:
     def __init__(self, pos_x, pos_y):
         self.pos_x = pos_x
         self.pos_y = pos_y
+        self.direction = 'right'
 
         self.animation_walk_left = Animation([
-            Sprite('character2', self.pos_x, self.pos_y),
-            Sprite('character3', self.pos_x, self.pos_y),
-            Sprite('character2', self.pos_x, self.pos_y)
+            Sprite('character_walk1', self.pos_x, self.pos_y, invert=True),
+            Sprite('character_walk2', self.pos_x, self.pos_y, invert=True),
+            Sprite('character_walk3', self.pos_x, self.pos_y, invert=True)
         ])
 
         self.animation_walk_right = Animation([
-            Sprite('character1', self.pos_x, self.pos_y),
-            Sprite('character2', self.pos_x, self.pos_y),
-            Sprite('character3', self.pos_x, self.pos_y)
+            Sprite('character_walk1', self.pos_x, self.pos_y),
+            Sprite('character_walk2', self.pos_x, self.pos_y),
+            Sprite('character_walk3', self.pos_x, self.pos_y)
         ])
 
-        self.animation_idle = Animation([
-            Sprite('character1', self.pos_x, self.pos_y)
+        self.animation_idle_right = Animation([
+            Sprite('character_idle', self.pos_x, self.pos_y)
         ])
 
-        self.animation = self.animation_idle
+        self.animation_idle_left = Animation([
+            Sprite('character_idle', self.pos_x, self.pos_y, invert=True)
+        ])
+
+        self.animation = self.animation_idle_right
         self.texture = self.animation.texture
 
     def jump(self):
-        self.animation = self.animation_idle
+        self.animation = self.animation_idle_right
         self.pos_y -= 5
         self.animation.next()
         self.texture = self.animation.texture
 
     def idle(self):
-        self.animation = self.animation_idle
+        if self.direction == 'left':
+            self.animation = self.animation_idle_left
+        elif self.direction == 'right':
+            self.animation = self.animation_idle_right
+        self.animation.next()
+        self.texture = self.animation.texture
+
+    def move_L(self, dist):
+        self.animation = self.animation_walk_left
+        self.pos_x -= dist
+        self.direction = 'left'
         self.animation.next()
         self.texture = self.animation.texture
 
     def move_R(self, dist):
         self.animation = self.animation_walk_right
         self.pos_x += dist
+        self.direction = 'right'
         self.animation.next()
         self.texture = self.animation.texture
 
     def down(self, dist):
         self.pos_y += dist
-        if self.pos_y >= 12:
-            self.pos_y = 12
+        if self.pos_y >= 11:
+            self.pos_y = 11
         self.texture = self.animation.texture
             
 
@@ -80,11 +96,11 @@ class Game:
         ui = Sprite('ui', 0, 0)
         background = Sprite('background', 0, 0)
         cloud = Sprite('cloud', 0, 0)
-        ground = Sprite('ground', 0, 15)
+        ground = Sprite('ground', 0, 14)
         character = Character(2, 8)
 
         self.engine.ui.sprites.append(ui)
-        self.engine.bg.sprites.append(background)
+        # self.engine.bg.sprites.append(background)
         self.engine.bg.sprites.append(cloud)
         self.engine.fg.sprites.append(ground)
         self.engine.fg.sprites.append(character)
@@ -107,7 +123,7 @@ class Game:
                 elif c == 'w':
                     character.jump()
                 elif c == 'a':
-                    character.pos_x -= 1
+                    character.move_L(1)
                 elif c == 's': 
                      character.pos_y += 1
                 elif c == 'd':
