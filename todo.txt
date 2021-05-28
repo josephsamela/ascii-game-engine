@@ -1,0 +1,20 @@
+# ASCII Quest, TODO
+
+## Engine
+* Prevent whitespace in sprites from masking lower layers. Whitespace in sprites should be "transparent".
+* Implement camera for allowing the character to move.
+* Smooth out framebuffer render - very choppy.
+
+## Animations
+* Allow animations to run time-independent of the gameloop.
+
+## Character
+* Handle movement while jumping/falling
+* Jump, fall and proper idle animations
+* Attack animation!
+
+## Items
+Implement non-character
+
+## Enemy
+* Implement an "enemy" that just sort of flies around the map.

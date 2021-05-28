@@ -75,6 +75,16 @@ class ScreenBuffer:
         for sprite in self.sprites:
             self.draw(sprite)
 
+class Animation:
+    def __init__(self, frames):
+        self.frame = 0
+        self.frames = frames # list of sprites
+        self.texture = self.frames[0].texture
+    def next(self):
+        self.frame += 1
+        if self.frame > len(self.frames)-1:
+            self.frame = 0
+        self.texture = self.frames[self.frame].texture
 
 class Engine:
     def __init__(self, height, width):
@@ -93,7 +103,6 @@ class Engine:
         self.clear_screen()
 
     def render(self):
-
         # Clear Engine display buffer
         self.lines = []
         for h in range(self.height):
