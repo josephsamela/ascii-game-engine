@@ -6,6 +6,15 @@ Idle
   █████
   █   █
 
+
+▐ █▄▄▄█ 
+▐ ▄█▄██▓▓
+▐▄█████▓▓
+  █████
+  █   █
+
+The left/right facing character swords use left/right half block characters. There should be no space between hand and sword
+
 Walk
 
   █▄▄▄█ ▌
@@ -16,8 +25,8 @@ Walk
 
   █▄▄▄█ ▌
 ▓▓██▄█▄ ▌
-▓▓█████ ▌
-  █████▀
+▓▓█████▀▌
+  █████
   ▀▄  █
 
   █▄▄▄█ ▌
@@ -32,12 +41,16 @@ Attack sequence
 ▓▓██▄█▄ ▌
 ▓▓█████▄▌
   █████
-  █   █
+  █  ▄▀
 
   █▄▄▄█      
-▓▓██▄█▄         ▚             ▚
-▓▓█████▄▃▃▃▃▃   ▚            ▛           █   
-  █████           ▞            ▙           █ 
- ▄▀   █         ▞             ▞
+▓▓██▄█▄       ▚             ▚
+▓▓█████▄▃▃▃▃ ▚            ▛           █   
+  █████         ▞            ▙           █ 
+ ▄▀   ▀▄      ▞             ▞
 
-Firewave continue across screen
+    █▄▄▄█
+  ▓▓██▄█▄
+  ▓▓█████
+  ▞█████
+▞ ▄▀   █

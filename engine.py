@@ -31,7 +31,6 @@ class Sprite:
                     l = l[::-1]
                 self.texture.append(l)
 
-
 class ScreenBuffer:
     def __init__(self, height, width, h_offset, v_offset):
         # Dimensions of game

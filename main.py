@@ -2,6 +2,7 @@ import time
 from controller import Controller
 from character import Character
 from engine import Engine, Sprite
+from ui import UI
 
 class Game:
     def __init__(self):
@@ -14,14 +15,23 @@ class Game:
         acceleration = 10 
 
         # Sprites
-        ui = Sprite('ui', 0, 0)
+        # thing = Thing(self)
+
+        # ui = Sprite('ui', 0, 0)
+        ui = UI(self)
+        ui.setName('Fin The Human')
+        ui.setLocation('Land of Ooo')
+        ui.setHP(10)
+        ui.setMP(10)
+
         background = Sprite('background', 0, 0)
         cloud = Sprite('cloud', 0, 0)
+
         ground = Sprite('ground', 0, 14)
         character = Character(2, 8)
 
-        self.engine.ui.sprites.append(ui)
-        # self.engine.bg.sprites.append(background)
+        # self.engine.ui.sprites.append(ui)
+        self.engine.bg.sprites.append(background)
         self.engine.bg.sprites.append(cloud)
         self.engine.fg.sprites.append(ground)
         self.engine.fg.sprites.append(character)
@@ -34,7 +44,7 @@ class Game:
 
             character.down(gravity)
 
-            cloud.pos_x += 0.01
+            cloud.pos_x += 0.05
             self.engine.tick()
 
             if kb.kbhit():
