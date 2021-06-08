@@ -1,24 +1,25 @@
+from os import remove
 from engine import Sprite
 
 class UI:
     def __init__(self, game):
-        self.sprite = Sprite('ui', 0, 0)
-        
+
         self.game = game
+        self.dialogueActive = False
 
-        self.hp = Bar(22, 21, 10)
-        self.mp = Bar(36, 21, 10)        
-        self.setHP(10)
-        self.setMP(10)
+        # Create sprites
+        self.ui = Sprite(game, 'ui', 0, 0, transparent=True)
+        self.hp = Bar(game, 22, 21, 10)
+        self.mp = Bar(game, 36, 21, 10)
+        self.name = Text(game, 3, 21, 'Hello')
+        self.location = Text(game, 49, 21, 'Hello')
 
-        self.name = Text(3, 21, 'Hello')
-        self.location = Text(49, 21, 'Hello')
-
-        game.engine.ui.sprites.append(self.sprite)
-        game.engine.ui.sprites.append(self.hp)
-        game.engine.ui.sprites.append(self.mp)
-        game.engine.ui.sprites.append(self.name)
-        game.engine.ui.sprites.append(self.location)
+        # Add sprites to layers
+        self.ui.add(layer='ui')
+        self.hp.add(layer='ui')
+        self.mp.add(layer='ui')
+        self.name.add(layer='ui')
+        self.location.add(layer='ui')
 
     def setHP(self, value):
         self.hp.setValue(value)
@@ -30,33 +31,44 @@ class UI:
         self.location.update(value)
 
     def startConversation(self, text):
-        c = Conversation(text).sprite
-        self.game.engine.ui.sprites.append(c)
+        if self.dialogueActive == False:
+            self.dialogueActive = True
+            self.dialogue = Conversation(self.game, text).sprite
+            self.dialogue.add(layer='ui')
 
-    def updateConversation(self, value):
-        pass
+    def updateConversation(self, text):
+        if self.dialogueActive == True:
+            next = Conversation(self.game, text).sprite
+            self.dialogue.remove()
+            self.dialogue = next
+            self.dialogue.add(layer='ui')
 
     def endConversation(self):
-        self.game.engine.ui.sprites.pop()
+        if self.dialogueActive == True:
+            self.dialogue.remove()
+            self.dialogueActive = False
+        
 
-class Conversation:
-    def __init__(self, text):
+class Conversation(Sprite):
+    def __init__(self, game, text):
+        super().__init__(game, 'blank', pos_x=2, pos_y=17)
+        self.game = game
         self.sprite = self.buildSprite(text)
     def buildSprite(self, text):
-        s = Sprite('textbox', 2, 17)
+        s = Sprite(self.game, 'textbox', self.pos_x, self.pos_y)
         header = list('──────────────────────────────────────────────────────────────')
-        if len(text) < 62:
-            line1 = text[0:62]
+        if len(text) < 61:
+            line1 = text[0:61]
             line2 = ''
-        elif len(text) >= 62:
-            line1 = text[0:62]
-            line2 = text[62:]
+        elif len(text) >= 61:
+            line1 = text[0:61]
+            line2 = text[61:122]
         # Add leading space to line to add space
         line1 = ' ' + line1
         line2 = ' ' + line2
         # Pad lines to width
-        line1 = line1.ljust(62)
-        line2 = line2.ljust(62)
+        line1 = line1.ljust(61)
+        line2 = line2.ljust(61)
         # Convert to lists
         line1 = list(line1)
         line2 = list(line2)
@@ -68,18 +80,36 @@ class Conversation:
         ]
         return s
 
-class Text:
-    def __init__(self, pos_x, pos_y, value):
-        self.pos_x = pos_x
-        self.pos_y = pos_y
+class Decision(Sprite):
+    def __init__(game, self):
+        self.pos_x = 57
+        self.pos_y = 14
+        self.animation_input_yes = Sprite('input_yes', self.pos_x, self.pos_y)
+        self.animation_input_no = Sprite('input_no', self.pos_x, self.pos_y)
+        self.option = 'yes'
+        self.animation = self.animation_input_yes
+        self.texture = self.animation.texture
+
+    def set_yes(self):
+        self.option = 'yes'
+        self.animation = self.animation_input_yes
+        self.texture = self.animation.texture
+
+    def set_no(self):
+        self.option = 'no'
+        self.animation = self.animation_input_no
+        self.texture = self.animation.texture
+
+class Text(Sprite):
+    def __init__(self, game, pos_x, pos_y, value):
+        super().__init__(game, 'blank', pos_x, pos_y)
         self.texture = [value]
     def update(self, value):
         self.texture = [value]
 
-class Bar:
-    def __init__(self, pos_x, pos_y, value):
-        self.pos_x = pos_x
-        self.pos_y = pos_y
+class Bar(Sprite):
+    def __init__(self, game, pos_x, pos_y, value):
+        super().__init__(game, 'blank', pos_x, pos_y)
         self.value = value
         self.texture = None
         self.update()

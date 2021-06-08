@@ -24,17 +24,15 @@ class Game:
         ui.setHP(10)
         ui.setMP(10)
 
-        background = Sprite('background', 0, 0)
-        cloud = Sprite('cloud', 0, 0)
+        background = Sprite(self, 'background', 0, 0)
+        cloud = Sprite(self,'cloud', 0, 0)
+        ground = Sprite(self, 'ground', 0, 14)
+        character = Character(self, 2, 8)
 
-        ground = Sprite('ground', 0, 14)
-        character = Character(2, 8)
-
-        # self.engine.ui.sprites.append(ui)
-        self.engine.bg.sprites.append(background)
-        self.engine.bg.sprites.append(cloud)
-        self.engine.fg.sprites.append(ground)
-        self.engine.fg.sprites.append(character)
+        background.add(layer='bg')
+        cloud.add(layer='bg')
+        ground.add(layer='fg')
+        character.add(layer='fg')
 
         kb = Controller()
 

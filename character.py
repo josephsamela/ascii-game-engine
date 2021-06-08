@@ -1,29 +1,28 @@
 from engine import Sprite, Animation
 
-class Character:
-    def __init__(self, pos_x, pos_y):
-        self.pos_x = pos_x
-        self.pos_y = pos_y
+class Character(Sprite):
+    def __init__(self, game, pos_x, pos_y):
+        super().__init__(game, 'blank', pos_x, pos_y, transparent=True)
         self.direction = 'right'
 
         self.animation_walk_left = Animation([
-            Sprite('character_walk1', self.pos_x, self.pos_y, invert=True),
-            Sprite('character_walk2', self.pos_x, self.pos_y, invert=True),
-            Sprite('character_walk3', self.pos_x, self.pos_y, invert=True)
+            Sprite(self.game, 'character_walk1', self.pos_x, self.pos_y, invert=True),
+            Sprite(self.game, 'character_walk2', self.pos_x, self.pos_y, invert=True),
+            Sprite(self.game, 'character_walk3', self.pos_x, self.pos_y, invert=True)
         ])
 
         self.animation_walk_right = Animation([
-            Sprite('character_walk1', self.pos_x, self.pos_y),
-            Sprite('character_walk2', self.pos_x, self.pos_y),
-            Sprite('character_walk3', self.pos_x, self.pos_y)
+            Sprite(self.game, 'character_walk1', self.pos_x, self.pos_y),
+            Sprite(self.game, 'character_walk2', self.pos_x, self.pos_y),
+            Sprite(self.game, 'character_walk3', self.pos_x, self.pos_y)
         ])
 
         self.animation_idle_right = Animation([
-            Sprite('character_idle', self.pos_x, self.pos_y)
+            Sprite(self.game, 'character_idle', self.pos_x, self.pos_y)
         ])
 
         self.animation_idle_left = Animation([
-            Sprite('character_idle', self.pos_x, self.pos_y, invert=True)
+            Sprite(self.game, 'character_idle', self.pos_x, self.pos_y, invert=True)
         ])
 
         self.animation = self.animation_idle_right

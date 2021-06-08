@@ -18,3 +18,17 @@ Implement non-character
 
 ## Enemy
 * Implement an "enemy" that just sort of flies around the map.
+
+## Items
+- Fanny pack
+- Backpack
+- Helmet
+- Sword (or maybe magic wand?)
+
+Since the beginning of time...(Jan 1, 1970 at midnight GMT) computer programmers have laboured over,
+
+writing code, delivering deliverables, participating in "team-building"
+
+one in his cubicle under the glow of flourescent lights
+
+becoming...COMPUTER-MAN!

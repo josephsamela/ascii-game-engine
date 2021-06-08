@@ -2,12 +2,14 @@ import os
 import sys
 
 class Sprite:
-    def __init__(self, filename, pos_x, pos_y, invert=False):
+    def __init__(self, game, filename, pos_x, pos_y, invert=False, transparent=False):
+        self.game = game
         self.filename = filename
         self.pos_x = pos_x
         self.pos_y = pos_y
         
         self.invert = invert
+        self.transparent = transparent
         
         self.texture = []
         self.load_texture(filename)
@@ -30,6 +32,24 @@ class Sprite:
                 if self.invert:
                     l = l[::-1]
                 self.texture.append(l)
+
+    def add(self, layer):
+        # Sprite to add itself to layer
+        self.layer = layer
+        if layer == 'ui':
+            self.game.engine.ui.sprites.append(self)
+        elif layer == 'fg':
+            self.game.engine.fg.sprites.append(self)
+        elif layer == 'bg':
+            self.game.engine.bg.sprites.append(self)
+    def remove(self):
+        # Sprite to remove itself from
+        if self.layer == 'ui':
+            self.game.engine.ui.sprites.remove(self)
+        elif self.layer == 'fg':
+            self.game.engine.fg.sprites.remove(self)
+        elif self.layer == 'bg':
+            self.game.engine.bg.sprites.remove(self)
 
 class ScreenBuffer:
     def __init__(self, height, width, h_offset, v_offset):
@@ -56,12 +76,15 @@ class ScreenBuffer:
         loc_x = 0
         loc_y = 0
         for row in sprite.texture:
-            if pos_y >= self.height: 
+            if pos_y >= self.height:
                 break
             for col in row:
                 if pos_x >= self.width:
                     break
-                self.lines[int(pos_y)][int(pos_x)] = col
+                if sprite.transparent and col == ' ':
+                    self.lines[int(pos_y)][int(pos_x)] = None
+                else:
+                    self.lines[int(pos_y)][int(pos_x)] = col
                 pos_x += 1
                 loc_x += 1
             pos_x = sprite.pos_x
@@ -96,7 +119,7 @@ class Engine:
         self.ui = ScreenBuffer(self.height, self.width, 0, 0)
         self.bg = ScreenBuffer(self.height-7, self.width-6, 2, 3)
         self.fg = ScreenBuffer(self.height-7, self.width-6, 2, 3)
-        self.buffers = [self.ui, self.bg, self.fg]
+        self.buffers = [self.bg, self.fg, self.ui]
 
         self.lines = []
         self.clear_screen()
