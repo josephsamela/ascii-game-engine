@@ -7,22 +7,38 @@ from character import Character
 
 class Game:
     def __init__(self):
-        self.engine = Engine(24, 68)
+        self.engine = Engine(24, 69)
 
         ui = UI(self)
-        ui.setName('Tak The Dwarf')
-        ui.setLocation('Forest of Id')
+        ui.setName('Taki The Dwarf')
+        ui.setLocation('City of Id')
         ui.setHP(3)
         ui.setMP(8)
+        ui.setTitle('Objective: Find Train Station')
 
-        platform = Sprite(self, 'ground', 10, 10, transparent=True)
-        platform.add(layer='bg')
+        # platform = Sprite(self, 'ground', 10, 10, transparent=True)
+        # platform.add(layer='bg')
 
-        background = Sprite(self, 'background', 0, 0, transparent=False)
+        cloud1 = Sprite(self, 'cloud', 0, 0, transparent=True)
+        cloud1.add(layer='bg')
+
+        background = Sprite(self, 'background', -3, 0, transparent=True)
         background.add(layer='bg')
 
-        player = Character(self, 14, 4)
-        player.add(layer='fg')
+        cloud2 = Sprite(self, 'cloud', 25, 0, transparent=True)
+        cloud2.add(layer='bg')
+
+        player = Character(self, 14, 8)
+        player.add(layer='obj')
+
+        boss = Sprite(self, 'boss_idle', 21, 8)
+        boss.add(layer='obj')
+
+        dock = Sprite(self, 'dock', 0, 11, transparent=True)
+        dock.add(layer='fg')
+
+        wave = Sprite(self, 'wave', 0, 15)
+        wave.add(layer='fg')
 
         # scroll = Sprite(self, 'scroll', 2, 2)
         # scroll.add(layer='fg')
@@ -60,15 +76,19 @@ class Game:
 
                     dialoge += 1
                     if dialoge == 1:
-                        ui.startConversation('Hak: Good morning fellow traveler!')
+                        player.speak('Good morning!')
+                        # ui.startConversation('Hak: Good morning fellow traveler!')
                     elif dialoge == 2:
-                        ui.updateConversation('Hak: Would you like to buy something?')
+                        player.speak('Would you like to buy something?')
+                        # ui.updateConversation('Hak: Would you like to buy something?')
                     elif dialoge == 3:
-                        ui.updateConversation('Hak: Ha, maybe next time. Farewell! ')
-                    elif dialoge >= 4:
-                        ui.updateConversation('Hak: Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test')
-                    elif dialoge >= 5:
-                        ui.endConversation()
+                        player.speak('Ha, maybe next time. Farewell! ')
+                        # ui.updateConversation('Hak: Ha, maybe next time. Farewell! ')
+                    elif dialoge == 4:
+                        player.speak('...')
+                        # ui.updateConversation('Hak: Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test')
+                    else:
+                        # ui.endConversation()
                         dialoge = 0
 
                 elif c == 'n':
@@ -77,6 +97,18 @@ class Game:
                     input(ord(c))
             else:
                 player.idle()
+
+            if abs(wave.pos_x) > 60:
+                wave.pos_x = 0
+            if abs(cloud1.pos_x) > 120:
+                cloud1.pos_x = 0
+            if abs(cloud1.pos_x) > 60:
+                cloud1.pos_x = 10
+
+            wave.pos_x -= 0.1
+            cloud1.pos_x += 0.05
+            cloud2.pos_x += 0.025
+
 
         kb.set_normal_term()
     

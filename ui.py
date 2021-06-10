@@ -9,10 +9,11 @@ class UI:
 
         # Create sprites
         self.ui = Sprite(game, 'ui', 0, 0, transparent=True)
-        self.hp = Bar(game, 22, 21, 10)
-        self.mp = Bar(game, 36, 21, 10)
-        self.name = Text(game, 3, 21, 'Hello')
-        self.location = Text(game, 49, 21, 'Hello')
+        self.hp = Bar(game, 23, 21, 10)
+        self.mp = Bar(game, 37, 21, 10)
+        self.name = Text(game, 2, 21, '', width=16, justify='center')
+        self.location = Text(game, 49, 21, '', width=16, justify='center')
+        self.title = Text(game, 3, 1, '', width=61, justify='center')
 
         # Add sprites to layers
         self.ui.add(layer='ui')
@@ -20,6 +21,7 @@ class UI:
         self.mp.add(layer='ui')
         self.name.add(layer='ui')
         self.location.add(layer='ui')
+        self.title.add(layer='ui')
 
     def setHP(self, value):
         self.hp.setValue(value)
@@ -29,6 +31,8 @@ class UI:
         self.name.update(value)
     def setLocation(self, value):
         self.location.update(value)
+    def setTitle(self, value):
+        self.title.update(value)
 
     def startConversation(self, text):
         if self.dialogueActive == False:
@@ -101,11 +105,21 @@ class Decision(Sprite):
         self.texture = self.animation.texture
 
 class Text(Sprite):
-    def __init__(self, game, pos_x, pos_y, value):
+    def __init__(self, game, pos_x, pos_y, value, justify='left', width=None):
         super().__init__(game, 'blank', pos_x, pos_y)
-        self.texture = [value]
+        self.justify = justify
+        if width == None:
+            self.width = len(value)
+        else:
+            self.width = width
     def update(self, value):
-        self.texture = [value]
+        if self.justify == 'left':
+            s = value.ljust(self.width)
+        elif self.justify == 'right':
+            s = value.rjust(self.width)
+        elif self.justify == 'center':
+            s = value.center(self.width)
+        self.texture = [s]
 
 class Bar(Sprite):
     def __init__(self, game, pos_x, pos_y, value):

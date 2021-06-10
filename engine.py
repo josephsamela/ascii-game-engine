@@ -42,6 +42,8 @@ class Sprite:
             self.game.engine.fg.sprites.append(self)
         elif layer == 'bg':
             self.game.engine.bg.sprites.append(self)
+        elif layer == 'obj':
+            self.game.engine.obj.sprites.append(self)
     def remove(self):
         # Sprite to remove itself from
         if self.layer == 'ui':
@@ -50,6 +52,8 @@ class Sprite:
             self.game.engine.fg.sprites.remove(self)
         elif self.layer == 'bg':
             self.game.engine.bg.sprites.remove(self)
+        elif self.layer == 'obj':
+            self.game.engine.obj.sprites.remove(self)
 
 class ScreenBuffer:
     def __init__(self, height, width, h_offset, v_offset):
@@ -82,9 +86,8 @@ class ScreenBuffer:
                 if pos_x >= self.width:
                     break
                 if sprite.transparent and col == ' ':
-                    self.lines[int(pos_y)][int(pos_x)] = None
-                else:
-                    self.lines[int(pos_y)][int(pos_x)] = col
+                    col = None
+                self.lines[int(pos_y)][int(pos_x)] = col
                 pos_x += 1
                 loc_x += 1
             pos_x = sprite.pos_x
@@ -118,8 +121,9 @@ class Engine:
         # Create buffer
         self.ui = ScreenBuffer(self.height, self.width, 0, 0)
         self.bg = ScreenBuffer(self.height-7, self.width-6, 2, 3)
+        self.obj = ScreenBuffer(self.height-7, self.width-6, 2, 3)
         self.fg = ScreenBuffer(self.height-7, self.width-6, 2, 3)
-        self.buffers = [self.bg, self.fg, self.ui]
+        self.buffers = [self.bg, self.obj, self.fg, self.ui]
 
         self.lines = []
         self.clear_screen()
