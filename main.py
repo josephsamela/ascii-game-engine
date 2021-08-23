@@ -63,3 +63,4 @@ class Game:
         kb.set_normal_term()
     
 g = Game()
+
