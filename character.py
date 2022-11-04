@@ -36,6 +36,12 @@ class Character(Sprite):
             Sprite(self.game, 'character_walk2', self.pos_x, self.pos_y)
         ])
 
+        self.animation_idle_blink_right = Animation([
+            Sprite(self.game, 'blink_idle1', self.pos_x, self.pos_y),
+            Sprite(self.game, 'blink_idle2', self.pos_x, self.pos_y),
+            Sprite(self.game, 'blink_idle3', self.pos_x, self.pos_y)
+        ])
+
         self.animation_idle_right = Animation([
             Sprite(self.game, 'character_idle', self.pos_x, self.pos_y)
         ])

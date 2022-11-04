@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 
 class Sprite:
     def __init__(self, game, filename, pos_x, pos_y, invert=False, transparent=False):
@@ -44,6 +45,7 @@ class Sprite:
             self.game.engine.bg.sprites.append(self)
         elif layer == 'obj':
             self.game.engine.obj.sprites.append(self)
+            
     def remove(self):
         # Sprite to remove itself from
         if self.layer == 'ui':
@@ -54,6 +56,10 @@ class Sprite:
             self.game.engine.bg.sprites.remove(self)
         elif self.layer == 'obj':
             self.game.engine.obj.sprites.remove(self)
+
+    def tick(self):
+        # Method intended for override by child
+        pass
 
 class ScreenBuffer:
     def __init__(self, height, width, h_offset, v_offset):
@@ -113,6 +119,8 @@ class Animation:
 
 class Engine:
     def __init__(self, height, width):
+        # Game clock
+        self.time = time.time()
 
         # Dimensions of game
         self.height = height
@@ -138,7 +146,7 @@ class Engine:
 
         # Composite all buffers
         for b in self.buffers:
-            b.display() # Redraw sprites
+            b.display() # Redraw frame
             for h,r in enumerate(b.lines):
                 for w,c in enumerate(r):
                     if c == None:
@@ -170,6 +178,12 @@ class Engine:
         os.system('cls' if os.name == 'nt' else 'clear')
 
     def tick(self):
+        # Update clock
+        self.time = time.time()
+        # Update sprites
+        for b in self.buffers:
+            for s in b.sprites:
+                s.tick()
         # Empty the buffer
         self.clear_buffer()
         self.render()

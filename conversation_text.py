@@ -1,9 +1,15 @@
 from os import truncate
 import time
-from engine import Engine, Sprite
+from engine import Animation, Engine, Sprite
 from ui import UI
 from controller import Controller
 from character import Character
+
+class TitleSequence(Sprite):
+    def __init__(self, game):
+        super().__init__(game, 'scroll', pos_x=2, pos_y=20, transparent=True)
+    def tick(self):
+        self.pos_y -= 0.1
 
 class Game:
     def __init__(self):
@@ -31,14 +37,14 @@ class Game:
         player = Character(self, 14, 8)
         player.add(layer='obj')
 
-        boss = Sprite(self, 'boss_idle', 21, 8)
-        boss.add(layer='obj')
-
         dock = Sprite(self, 'dock', 0, 11, transparent=True)
         dock.add(layer='fg')
 
         wave = Sprite(self, 'wave', 0, 15)
         wave.add(layer='fg')
+
+        s = TitleSequence(self)
+        s.add(layer='fg')
 
         # scroll = Sprite(self, 'scroll', 2, 2)
         # scroll.add(layer='fg')
@@ -46,10 +52,8 @@ class Game:
         # girl = Sprite(self, 'girl', 21, -10)
         # girl.add(layer='fg')
 
-
         kb = Controller()
 
-        self.engine.tick()
         dialoge = 0
         while True:
             time.sleep(1/60)
@@ -66,14 +70,14 @@ class Game:
                 elif c == 'a':
                     # player.pos_x -= 1
                     player.move_L(1)
+                    # train.pos_x +=1
                 elif c == 's': 
                     player.pos_y += 1
                 elif c == 'd':
                     # player.pos_x += 1
                     player.move_R(1)
+                    # train.pos_x -=1
                 elif c == 'm':
-                    # ui.startConversation('Hak: Good morning fellow traveler!')
-
                     dialoge += 1
                     if dialoge == 1:
                         player.speak('Good morning!')
@@ -86,9 +90,8 @@ class Game:
                         # ui.updateConversation('Hak: Ha, maybe next time. Farewell! ')
                     elif dialoge == 4:
                         player.speak('...')
-                        # ui.updateConversation('Hak: Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test')
                     else:
-                        # ui.endConversation()
+                        ui.endConversation()
                         dialoge = 0
 
                 elif c == 'n':
