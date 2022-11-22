@@ -39,6 +39,8 @@ class Sprite:
         self.layer = layer
         if layer == 'ui':
             self.game.engine.ui.sprites.append(self)
+        elif layer == 'txt':
+            self.game.engine.txt.sprites.append(self)
         elif layer == 'fg':
             self.game.engine.fg.sprites.append(self)
         elif layer == 'bg':
@@ -50,6 +52,8 @@ class Sprite:
         # Sprite to remove itself from
         if self.layer == 'ui':
             self.game.engine.ui.sprites.remove(self)
+        elif self.layer == 'txt':
+            self.game.engine.txt.sprites.remove(self)
         elif self.layer == 'fg':
             self.game.engine.fg.sprites.remove(self)
         elif self.layer == 'bg':
@@ -81,25 +85,22 @@ class ScreenBuffer:
                 self.lines[h].append(None)
 
     def draw(self, sprite):
-        pos_x = sprite.pos_x
-        pos_y = sprite.pos_y
-        loc_x = 0
-        loc_y = 0
-        for row in sprite.texture:
-            if pos_y >= self.height:
-                break
-            for col in row:
-                if pos_x >= self.width:
-                    break
+        for offset_y, row in enumerate(sprite.texture):
+            for offset_x, col in enumerate(row):
+                # Handle sprite transparency
                 if sprite.transparent and col == ' ':
                     col = None
-                self.lines[int(pos_y)][int(pos_x)] = col
-                pos_x += 1
-                loc_x += 1
-            pos_x = sprite.pos_x
-            loc_x = 0
-            pos_y += 1
-            loc_y += 1
+                # Calculate texture location
+                loc_x = sprite.pos_x + offset_x
+                loc_y = sprite.pos_y + offset_y
+                # Handle situations where texture location is beyond screen
+                if loc_x < 0 or loc_y < 0:
+                    continue
+                if loc_x >= self.width or loc_y >= self.height:
+                    continue
+                # Write sprite texture to buffer.=
+                self.lines[int(loc_y)][int(loc_x)] = col
+
 
     def display(self):
         # Draw all sprites into buffer
@@ -126,12 +127,13 @@ class Engine:
         self.height = height
         self.width = width
 
-        # Create buffer
-        self.ui = ScreenBuffer(self.height, self.width, 0, 0)
-        self.bg = ScreenBuffer(self.height-7, self.width-6, 2, 3)
-        self.obj = ScreenBuffer(self.height-7, self.width-6, 2, 3)
-        self.fg = ScreenBuffer(self.height-7, self.width-6, 2, 3)
-        self.buffers = [self.bg, self.obj, self.fg, self.ui]
+        # Create screen buffers
+        self.ui  = ScreenBuffer(self.height, self.width, 0, 0)
+        self.txt = ScreenBuffer(self.height, self.width-6, 2, 3) # These screen buffers are offset because they exist "inside" the UI frame
+        self.bg  = ScreenBuffer(self.height, self.width-6, 2, 3) #
+        self.obj = ScreenBuffer(self.height, self.width-6, 2, 3) #
+        self.fg  = ScreenBuffer(self.height, self.width-6, 2, 3) #
+        self.buffers = [self.bg, self.obj, self.fg, self.txt, self.ui]
 
         self.lines = []
         self.clear_screen()

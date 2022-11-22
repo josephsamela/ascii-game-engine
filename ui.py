@@ -1,4 +1,3 @@
-from os import remove
 from engine import Sprite
 
 class UI:
@@ -13,7 +12,10 @@ class UI:
         self.mp = Bar(game, 37, 21, 10)
         self.name = Text(game, 2, 21, '', width=16, justify='center')
         self.location = Text(game, 49, 21, '', width=16, justify='center')
-        self.title = Text(game, 3, 1, '', width=61, justify='center')
+
+        self.banner = Sprite(game, 'banner', 2, 2)
+        self.banner_health = Bar(game, 21, 2, 25)
+        self.banner_text = Text(game, 3, 1, '', width=61, justify='center')
 
         # Add sprites to layers
         self.ui.add(layer='ui')
@@ -21,7 +23,16 @@ class UI:
         self.mp.add(layer='ui')
         self.name.add(layer='ui')
         self.location.add(layer='ui')
-        self.title.add(layer='ui')
+
+    def setBanner(self, enable):
+        if enable:
+            self.banner.add(layer='ui')
+            self.banner_health.add(layer='ui')
+            self.banner_text.add(layer='ui')
+        else:
+            self.banner.remove()
+            self.banner_health.remove()
+            self.banner_text.remove()
 
     def setHP(self, value):
         self.hp.setValue(value)
@@ -31,8 +42,10 @@ class UI:
         self.name.update(value)
     def setLocation(self, value):
         self.location.update(value)
-    def setTitle(self, value):
-        self.title.update(value)
+    def setBannerText(self, value):
+        self.banner_text.update(value)
+    def setBannerHealth(self, value):
+        self.banner_health.setValue(value)
 
     def startConversation(self, text):
         if self.dialogueActive == False:

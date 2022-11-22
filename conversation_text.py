@@ -6,10 +6,12 @@ from controller import Controller
 from character import Character
 
 class TitleSequence(Sprite):
-    def __init__(self, game):
+    def __init__(self, game, ui):
+        self.ui = ui
         super().__init__(game, 'scroll', pos_x=2, pos_y=20, transparent=True)
     def tick(self):
         self.pos_y -= 0.1
+        self.ui.setName(f'({int(self.pos_x)},{int(self.pos_y)})')
 
 class Game:
     def __init__(self):
@@ -40,11 +42,11 @@ class Game:
         dock = Sprite(self, 'dock', 0, 11, transparent=True)
         dock.add(layer='fg')
 
-        wave = Sprite(self, 'wave', 0, 15)
+        wave = Sprite(self, 'wave', 0, 15, transparent=True)
         wave.add(layer='fg')
 
-        s = TitleSequence(self)
-        s.add(layer='fg')
+        s = TitleSequence(self, ui)
+        s.add(layer='txt')
 
         # scroll = Sprite(self, 'scroll', 2, 2)
         # scroll.add(layer='fg')
