@@ -5,6 +5,7 @@ class UI:
 
         self.game = game
         self.dialogueActive = False
+        self.decisionActive = False
 
         # Create sprites
         self.ui = Sprite(game, 'ui', 0, 0, transparent=True)
@@ -47,19 +48,32 @@ class UI:
     def setBannerHealth(self, value):
         self.banner_health.setValue(value)
 
+    def startDecision(self):
+        if self.decisionActive == False:
+            self.decisionActive = True
+            self.decision = Decision(self.game)
+            self.decision.add(layer='ui')
+    def updateDecision(self):
+        if self.decisionActive == True:
+            self.decision.remove()
+            self.decision = next
+            self.decision.add(layer='ui')
+    def endDecision(self):
+        if self.decisionActive == True:
+            self.decision.remove()
+            self.decisionActive = False
+
     def startConversation(self, text):
         if self.dialogueActive == False:
             self.dialogueActive = True
             self.dialogue = Conversation(self.game, text).sprite
             self.dialogue.add(layer='ui')
-
     def updateConversation(self, text):
         if self.dialogueActive == True:
             next = Conversation(self.game, text).sprite
             self.dialogue.remove()
             self.dialogue = next
             self.dialogue.add(layer='ui')
-
     def endConversation(self):
         if self.dialogueActive == True:
             self.dialogue.remove()
@@ -73,19 +87,19 @@ class Conversation(Sprite):
         self.sprite = self.buildSprite(text)
     def buildSprite(self, text):
         s = Sprite(self.game, 'textbox', self.pos_x, self.pos_y)
-        header = list('──────────────────────────────────────────────────────────────')
-        if len(text) < 61:
-            line1 = text[0:61]
+        header = list('───────────────────────────────────────────────────────────────')
+        if len(text) < 63:
+            line1 = text[0:63]
             line2 = ''
-        elif len(text) >= 61:
-            line1 = text[0:61]
-            line2 = text[61:122]
+        elif len(text) >= 63:
+            line1 = text[0:63]
+            line2 = text[63:122]
         # Add leading space to line to add space
         line1 = ' ' + line1
         line2 = ' ' + line2
         # Pad lines to width
-        line1 = line1.ljust(61)
-        line2 = line2.ljust(61)
+        line1 = line1.ljust(63)
+        line2 = line2.ljust(63)
         # Convert to lists
         line1 = list(line1)
         line2 = list(line2)
@@ -98,11 +112,10 @@ class Conversation(Sprite):
         return s
 
 class Decision(Sprite):
-    def __init__(game, self):
-        self.pos_x = 57
-        self.pos_y = 14
-        self.animation_input_yes = Sprite('input_yes', self.pos_x, self.pos_y)
-        self.animation_input_no = Sprite('input_no', self.pos_x, self.pos_y)
+    def __init__(self, game):
+        super().__init__(game, 'blank', pos_x=58, pos_y=14)
+        self.animation_input_yes = Sprite(self.game, 'input_yes', self.pos_x, self.pos_y)
+        self.animation_input_no = Sprite(self.game, 'input_no', self.pos_x, self.pos_y)
         self.option = 'yes'
         self.animation = self.animation_input_yes
         self.texture = self.animation.texture

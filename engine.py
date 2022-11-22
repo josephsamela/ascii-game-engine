@@ -129,10 +129,14 @@ class Engine:
 
         # Create screen buffers
         self.ui  = ScreenBuffer(self.height, self.width, 0, 0)
-        self.txt = ScreenBuffer(self.height, self.width-6, 2, 3) # These screen buffers are offset because they exist "inside" the UI frame
-        self.bg  = ScreenBuffer(self.height, self.width-6, 2, 3) #
-        self.obj = ScreenBuffer(self.height, self.width-6, 2, 3) #
-        self.fg  = ScreenBuffer(self.height, self.width-6, 2, 3) #
+        self.txt = ScreenBuffer(self.height, self.width, 0, 0)
+        self.bg  = ScreenBuffer(self.height, self.width, 0, 0)
+        self.obj = ScreenBuffer(self.height, self.width, 0, 0)
+        self.fg  = ScreenBuffer(self.height, self.width, 0, 0)
+        # self.txt = ScreenBuffer(self.height, self.width-6, 2, 3) # These screen buffers are offset because they exist "inside" the UI frame
+        # self.bg  = ScreenBuffer(self.height, self.width-6, 2, 3) #
+        # self.obj = ScreenBuffer(self.height, self.width-6, 2, 3) #
+        # self.fg  = ScreenBuffer(self.height, self.width-6, 2, 3) #
         self.buffers = [self.bg, self.obj, self.fg, self.txt, self.ui]
 
         self.lines = []
