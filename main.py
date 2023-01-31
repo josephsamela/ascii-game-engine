@@ -20,7 +20,7 @@ class Game:
         ui.setHP(3)
         ui.setMP(8)
 
-        player = Character(self, 14, 11)
+        player = Character(self, 15, 12)
         player.add(layer='obj')
 
         cloud1 = Sprite(self, 'cloud', 0, 1)
@@ -32,11 +32,11 @@ class Game:
         cloud2 = Sprite(self, 'cloud', 25, 2)
         cloud2.add(layer='bg')
 
-        dock = Sprite(self, 'dock', 0, 14, transparent=True)
+        dock = Sprite(self, 'dock', 0, 15, transparent=True)
         dock.add(layer='fg')
 
-        wave = Sprite(self, 'wave', 0, 18, transparent=True)
-        wave.add(layer='bg')
+        wave = Sprite(self, 'wave', 0, 19, transparent=False)
+        wave.add(layer='fg')
 
         # s = TitleSequence(self)
         # s.add(layer='txt')
@@ -69,15 +69,15 @@ class Game:
                 elif c == 'm':
                     dialoge += 1
                     if dialoge == 1:
-                        # player.speak('Good morning!')
                         ui.startConversation('Hak: Good morning fellow traveler!')
                     elif dialoge == 2:
-                        # player.speak('Would you like to buy something?')
                         ui.updateConversation('Hak: Would you like to buy something?')
                         ui.startDecision()
                     elif dialoge == 3:
-                        # player.speak('Ha, maybe next time. Farewell!')
                         ui.updateConversation('Hak: Ha, maybe next time. Farewell! ')
+                        ui.endDecision()
+                    elif dialoge == 4:
+                        ui.updateConversation('Hak: Yesterday moring while watching the sunrise, I saw a large creature fly across the horizon...')
                         ui.endDecision()
                     else:
                         ui.endConversation()

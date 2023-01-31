@@ -8,7 +8,8 @@ class UI:
         self.decisionActive = False
 
         # Create sprites
-        self.ui = Sprite(game, 'ui', 0, 0, transparent=True)
+        self.ui_border = Sprite(game, 'ui_border', 0, 0, transparent=True)
+        self.ui_status = Sprite(game, 'ui_status', 2, 20)
         self.hp = Bar(game, 23, 21, 10)
         self.mp = Bar(game, 37, 21, 10)
         self.name = Text(game, 2, 21, '', width=16, justify='center')
@@ -19,7 +20,8 @@ class UI:
         self.banner_text = Text(game, 3, 1, '', width=61, justify='center')
 
         # Add sprites to layers
-        self.ui.add(layer='ui')
+        self.ui_border.add(layer='ui')
+        self.ui_status.add(layer='ui')
         self.hp.add(layer='ui')
         self.mp.add(layer='ui')
         self.name.add(layer='ui')
@@ -88,12 +90,19 @@ class Conversation(Sprite):
     def buildSprite(self, text):
         s = Sprite(self.game, 'textbox', self.pos_x, self.pos_y)
         header = list('───────────────────────────────────────────────────────────────')
-        if len(text) < 63:
-            line1 = text[0:63]
+        if len(text) < 61:
+            line1 = text[0:61]
             line2 = ''
-        elif len(text) >= 63:
-            line1 = text[0:63]
-            line2 = text[63:122]
+        elif len(text) >= 61:
+            # walk back to last " " character and split
+            brp = 61
+            for i in reversed(text[0:61]):
+                if i == " ":
+                    break
+                else:
+                    brp = brp-1
+            line1 = text[0:brp]
+            line2 = text[brp:122]
         # Add leading space to line to add space
         line1 = ' ' + line1
         line2 = ' ' + line2
