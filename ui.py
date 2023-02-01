@@ -157,13 +157,20 @@ class Text(Sprite):
         self.texture = [s]
 
 class Bar(Sprite):
-    def __init__(self, game, pos_x, pos_y, value):
+    def __init__(self, game, pos_x, pos_y, value, max_value=10, min_value=0):
         super().__init__(game, 'blank', pos_x, pos_y)
         self.value = value
+        self.max_value = max_value
+        self.min_value = min_value
         self.texture = None
         self.update()
     def setValue(self, value):
-        self.value = value
+        if self.value > self.max_value:
+            self.value = self.max_value
+        elif self.value < self.min_value:
+            self.value = self.min_value
+        else:
+            self.value = value
         self.update()
     def update(self):
         self.texture = ['▓'*self.value]
