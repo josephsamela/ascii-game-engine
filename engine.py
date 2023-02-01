@@ -87,9 +87,6 @@ class ScreenBuffer:
     def draw(self, sprite):
         for offset_y, row in enumerate(sprite.texture):
             for offset_x, col in enumerate(row):
-                # Handle sprite transparency
-                if sprite.transparent and col == ' ':
-                    col = None
                 # Calculate texture location
                 loc_x = sprite.pos_x + offset_x
                 loc_y = sprite.pos_y + offset_y
@@ -98,7 +95,13 @@ class ScreenBuffer:
                     continue
                 if loc_x >= self.width or loc_y >= self.height:
                     continue
-                # Write sprite texture to buffer.=
+                # Handle sprite transparency
+                if sprite.transparent and col == ' ':
+                    if self.lines[int(loc_y)][int(loc_x)] != None:
+                        col = self.lines[int(loc_y)][int(loc_x)]
+                    else:
+                        col = None
+                # Write sprite texture to buffer.
                 self.lines[int(loc_y)][int(loc_x)] = col
 
 
@@ -133,10 +136,6 @@ class Engine:
         self.bg  = ScreenBuffer(self.height, self.width, 0, 0)
         self.obj = ScreenBuffer(self.height, self.width, 0, 0)
         self.fg  = ScreenBuffer(self.height, self.width, 0, 0)
-        # self.txt = ScreenBuffer(self.height, self.width-6, 2, 3) # These screen buffers are offset because they exist "inside" the UI frame
-        # self.bg  = ScreenBuffer(self.height, self.width-6, 2, 3) #
-        # self.obj = ScreenBuffer(self.height, self.width-6, 2, 3) #
-        # self.fg  = ScreenBuffer(self.height, self.width-6, 2, 3) #
         self.buffers = [self.bg, self.obj, self.fg, self.txt, self.ui]
 
         self.lines = []

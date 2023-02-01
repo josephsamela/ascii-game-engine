@@ -9,7 +9,7 @@ class UI:
 
         # Create sprites
         self.ui_border = Sprite(game, 'ui_border', 0, 0, transparent=True)
-        self.ui_status = Sprite(game, 'ui_status', 2, 20)
+        self.ui_status = Sprite(game, 'ui_status', 1, 20)
         self.hp = Bar(game, 23, 21, 10)
         self.mp = Bar(game, 37, 21, 10)
         self.name = Text(game, 2, 21, '', width=16, justify='center')
@@ -20,8 +20,8 @@ class UI:
         self.banner_text = Text(game, 3, 1, '', width=61, justify='center')
 
         # Add sprites to layers
-        self.ui_border.add(layer='ui')
         self.ui_status.add(layer='ui')
+        self.ui_border.add(layer='ui')
         self.hp.add(layer='ui')
         self.mp.add(layer='ui')
         self.name.add(layer='ui')
