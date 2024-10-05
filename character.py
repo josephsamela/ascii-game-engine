@@ -1,4 +1,3 @@
-from os import terminal_size
 from typing import Text
 from engine import Sprite, Animation
 from ui import Text
@@ -57,10 +56,8 @@ class Character(Sprite):
         self.speechbubble.speak(text)
 
     def update(self):
-        # Update animation
         self.animation.next()
         self.texture = self.animation.texture
-        # Reposition speach bubble
         self.speechbubble.update()
 
     def jump(self):

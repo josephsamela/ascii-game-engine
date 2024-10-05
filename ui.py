@@ -16,7 +16,7 @@ class UI:
         self.location = Text(game, 49, 21, '', width=16, justify='center')
 
         self.banner = Sprite(game, 'banner', 2, 2)
-        self.banner_health = Bar(game, 21, 2, 25)
+        self.banner_health = Bar(game, 21, 2, 25, 25, 0)
         self.banner_text = Text(game, 3, 1, '', width=61, justify='center')
 
         # Add sprites to layers
@@ -27,7 +27,7 @@ class UI:
         self.name.add(layer='ui')
         self.location.add(layer='ui')
 
-    def setBanner(self, enable):
+    def setBanner(self, enable=True):
         if enable:
             self.banner.add(layer='ui')
             self.banner_health.add(layer='ui')
@@ -68,11 +68,11 @@ class UI:
     def startConversation(self, text):
         if self.dialogueActive == False:
             self.dialogueActive = True
-            self.dialogue = Conversation(self.game, text).sprite
+            self.dialogue = ConversationSpeechBox(self.game, text).sprite
             self.dialogue.add(layer='ui')
     def updateConversation(self, text):
         if self.dialogueActive == True:
-            next = Conversation(self.game, text).sprite
+            next = ConversationSpeechBox(self.game, text).sprite
             self.dialogue.remove()
             self.dialogue = next
             self.dialogue.add(layer='ui')
@@ -81,8 +81,59 @@ class UI:
             self.dialogue.remove()
             self.dialogueActive = False
         
+class Conversation:
+    def __init__(self, ui, dialogue):
+        self.ui = ui
+        self.dialogue = dialogue
+        self.current_dialogue = 0
 
-class Conversation(Sprite):
+    def talk(self):
+        if self.current_dialogue == 0:
+            self.start()
+        elif self.current_dialogue >= len(self.dialogue):
+            self.end()
+        else:
+            self.next()
+
+        self.current_dialogue += 1
+
+    def start(self):
+        self.ui.startConversation(
+            self.dialogue[self.current_dialogue].text
+        )
+
+    def end(self):
+        self.ui.endConversation()
+
+    def next(self):
+        cd = self.dialogue[self.current_dialogue]
+
+        self.ui.updateConversation(
+            cd.text
+        )
+
+        if cd.decision:
+            self.ui.startDecision()
+        else:
+            self.ui.endDecision()
+
+
+
+class Dialogue:
+    def __init__(self, text, yes=None, no=None):
+        self.text = text
+        self.yes = yes
+        self.no = no
+        
+    @property
+    def decision(self):
+        if self.yes or self.no:
+            return True
+        else:
+            return False
+
+
+class ConversationSpeechBox(Sprite):
     def __init__(self, game, text):
         super().__init__(game, 'blank', pos_x=2, pos_y=17)
         self.game = game
@@ -165,9 +216,9 @@ class Bar(Sprite):
         self.texture = None
         self.update()
     def setValue(self, value):
-        if self.value > self.max_value:
+        if value > self.max_value:
             self.value = self.max_value
-        elif self.value < self.min_value:
+        elif value < self.min_value:
             self.value = self.min_value
         else:
             self.value = value

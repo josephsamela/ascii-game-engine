@@ -1,107 +1,49 @@
 import time
-from engine import Engine, Sprite
-from ui import UI
+from engine import Engine, Sprite, Layer
+from ui import UI, Conversation, Dialogue
 from controller import Controller
 from character import Character
-
-class TitleSequence(Sprite):
-    def __init__(self, game):
-        super().__init__(game, 'scroll', pos_x=2, pos_y=20, transparent=True)
-    def tick(self):
-        self.pos_y -= 0.1
+from input import Input
 
 class Game:
     def __init__(self):
-        self.engine = Engine(24, 67)
+        self.engine = Engine(68, 24)
 
         ui = UI(self)
-        ui.setName('Taki The Dwarf')
         ui.setLocation('City of Id')
-        ui.setHP(3)
-        ui.setMP(8)
+        ui.setName('Taki The Human')
+        ui.setBannerText('Megaloth The Forsaken')
+        ui.setBannerHealth(100)
+        ui.setBanner(True)
 
-        player = Character(self, 15, 12)
-        player.add(layer='obj')
+        conversation = Conversation(
+            ui,
+            dialogue=[
+                Dialogue('Hello! It\'s nice to meet you!'),
+                Dialogue('Would you like to see my wares?', yes="Here, take a look!", no="Ok, that's fine."),
+                Dialogue('Please come again soon!')
+            ]
+        )
 
-        cloud1 = Sprite(self, 'cloud', 0, 1)
-        cloud1.add(layer='fg')
+        character = Character(self, 10, 10)
+        character.add(layer='fg')
 
-        background = Sprite(self, 'background', 0, 2, transparent=True)
-        background.add(layer='bg')
-
-        cloud2 = Sprite(self, 'cloud', 25, 2)
-        cloud2.add(layer='bg')
-
-        dock = Sprite(self, 'dock', 0, 15, transparent=True)
-        dock.add(layer='fg')
-
-        wave = Sprite(self, 'wave', 0, 19, transparent=False)
-        wave.add(layer='fg')
-
-        # s = TitleSequence(self)
-        # s.add(layer='txt')
-
-        kb = Controller()
-
-        dialoge = 0
+        controller = Input()
         while True:
-            time.sleep(1/60)
             self.engine.tick()
 
-            if kb.kbhit():
-                c = kb.getch()
-                if ord(c) == 27: # ESC
+            i = controller()
+
+            match i:
+                case 'q':
                     break
-                elif ord(c) == 13: # ENTER
-                    pass
-                elif c == 'w':
-                    player.pos_y -= 1
-                elif c == 'a':
-                    # player.pos_x -= 1
-                    player.move_L(2)
-                    # train.pos_x +=1
-                elif c == 's': 
-                    player.pos_y += 1
-                elif c == 'd':
-                    # player.pos_x += 1
-                    player.move_R(2)
-                    # train.pos_x -=1
-                elif c == 'm':
-                    dialoge += 1
-                    if dialoge == 1:
-                        ui.startConversation('Hak: Good morning fellow traveler!')
-                    elif dialoge == 2:
-                        ui.updateConversation('Hak: Would you like to buy something?')
-                        ui.startDecision()
-                    elif dialoge == 3:
-                        ui.updateConversation('Hak: Ha, maybe next time. Farewell! ')
-                        ui.endDecision()
-                    elif dialoge == 4:
-                        ui.updateConversation('Hak: Yesterday moring while watching the sunrise, I saw a large creature fly across the horizon...')
-                        ui.endDecision()
-                    else:
-                        ui.endConversation()
-                        dialoge = 0
+                case 'c':
+                    conversation.talk()
+                case 'a':
+                    character.move_L(1)
+                case 'd':
+                    character.move_R(1)
 
-                elif c == 'n':
-                    ui.endConversation()
-                else:
-                    input(ord(c))
-            else:
-                player.idle()
-
-            if abs(wave.pos_x) > 60:
-                wave.pos_x = 0
-            if abs(cloud1.pos_x) > 120:
-                cloud1.pos_x = 0
-            if abs(cloud1.pos_x) > 60:
-                cloud1.pos_x = 10
-
-            wave.pos_x -= 0.1
-            cloud1.pos_x += 0.05
-            cloud2.pos_x += 0.025
-
-
-        kb.set_normal_term()
+            character.idle()
     
 g = Game()

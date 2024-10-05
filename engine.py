@@ -61,54 +61,69 @@ class Sprite:
         elif self.layer == 'obj':
             self.game.engine.obj.sprites.remove(self)
 
+        self.game.engine.tick()
+
     def tick(self):
         # Method intended for override by child
         pass
 
-class ScreenBuffer:
-    def __init__(self, height, width, h_offset, v_offset):
-        # Dimensions of game
+class Layer:
+    def __init__(self, name, width, height):
+        self.name = name
+        self.buffer = Buffer(width, height)
+        self.sprites = []
+
+    def draw(self):
+        self.buffer.clear()
+        for sprite in self.sprites:
+            self.buffer.draw(sprite)
+
+    def add(self, sprite):
+        self.sprites.append(sprite)
+    
+    def remove(self, sprite):
+        self.sprites.remove(sprite)
+
+class Buffer:
+    def __init__(self, width, height):
         self.height = height
         self.width = width
-        self.h_offset = h_offset
-        self.v_offset = v_offset
-        self.lines = []
-        self.sprites = []
-        self.clear_buffer()
+        self.buffer = None
+        self.clear()
 
-    def clear_buffer(self):
-        # create empty buffer
-        self.lines = []
+    def get(self, x, y):
+        if x < 0 or y < 0 or x >= self.width or y >= self.height:
+            return None
+        else:
+            return self.buffer[y][x]
+
+    def set(self, x, y, char):
+        # Ignore characters outside buffer bounds
+        if x < 0 or y < 0 or x >= self.width or y >= self.height:
+            pass
+        else:
+            self.buffer[y][x] = char
+
+    def clear(self):
+        self.buffer = []
         for h in range(self.height):
-            self.lines.append([])
-            for w in range(self.width):
-                self.lines[h].append(None)
+            self.buffer.append([None]*self.width)
+        # self.buffer = [[None]*self.width]*self.height
 
     def draw(self, sprite):
+        # Iterate over each character in sprite texture
         for offset_y, row in enumerate(sprite.texture):
             for offset_x, col in enumerate(row):
-                # Calculate texture location
+
+                # Calculate position of character
                 loc_x = sprite.pos_x + offset_x
                 loc_y = sprite.pos_y + offset_y
-                # Handle situations where texture location is beyond screen
-                if loc_x < 0 or loc_y < 0:
-                    continue
-                if loc_x >= self.width or loc_y >= self.height:
-                    continue
-                # Handle sprite transparency
+
+                # Write character to buffer location
                 if sprite.transparent and col == ' ':
-                    if self.lines[int(loc_y)][int(loc_x)] != None:
-                        col = self.lines[int(loc_y)][int(loc_x)]
-                    else:
-                        col = None
-                # Write sprite texture to buffer.
-                self.lines[int(loc_y)][int(loc_x)] = col
-
-
-    def display(self):
-        # Draw all sprites into buffer
-        for sprite in self.sprites:
-            self.draw(sprite)
+                    pass
+                else:
+                    self.set(loc_x, loc_y, col)
 
 class Animation:
     def __init__(self, frames):
@@ -122,61 +137,59 @@ class Animation:
         self.texture = self.frames[self.frame].texture
 
 class Engine:
-    def __init__(self, height, width):
+    def __init__(self, width, height):
         # Game clock
         self.time = time.time()
 
         # Dimensions of game
-        self.height = height
         self.width = width
+        self.height = height
+
+        # Dimensions of screen
+        self.screen_width, self.screen_height = os.get_terminal_size()
+        self.pillarbox = round((self.screen_width - self.width)/2)
+        self.letterbox = round((self.screen_height - self.height)/2)
 
         # Create screen buffers
-        self.ui  = ScreenBuffer(self.height, self.width, 0, 0)
-        self.txt = ScreenBuffer(self.height, self.width, 0, 0)
-        self.bg  = ScreenBuffer(self.height, self.width, 0, 0)
-        self.obj = ScreenBuffer(self.height, self.width, 0, 0)
-        self.fg  = ScreenBuffer(self.height, self.width, 0, 0)
-        self.buffers = [self.bg, self.obj, self.fg, self.txt, self.ui]
+        self.ui  = Layer('ui', width, height)
+        self.txt = Layer('txt', width, height)
+        self.bg  = Layer('bg', width, height)
+        self.obj = Layer('obj', width, height)
+        self.fg  = Layer('fg', width, height)
+        self.layers = [self.bg, self.obj, self.fg, self.txt, self.ui]
 
-        self.lines = []
+        self.buffer = Buffer(width, height)
         self.clear_screen()
 
     def render(self):
-        # Clear Engine display buffer
-        self.lines = []
-        for h in range(self.height):
-            self.lines.append([])
-            for w in range(self.width):
-                self.lines[h].append(None)
+        # Composite all layers into a single buffer
+        for layer in self.layers:
+            layer.draw()
+            for y in range(self.height):
+                for x in range(self.width):
+                    char=layer.buffer.get(x,y)
+                    
+                    if char != None:
+                        self.buffer.set(x, y, char)
 
-        # Composite all buffers
-        for b in self.buffers:
-            b.display() # Redraw frame
-            for h,r in enumerate(b.lines):
-                for w,c in enumerate(r):
-                    if c == None:
-                        continue
-                    self.lines[h + b.v_offset][w + b.h_offset] = c
-
-        # Replace all None with ' ' for final print
-        for h in range(len(self.lines)):
-            for w in range(len(self.lines[h])):
-                if self.lines[h][w] == None:
-                    self.lines[h][w] = ' '
-
-        # Join screenbuffer into line and print
+        # Formate frame buffer into single line
+        letterbox_upper = (' '*self.screen_width+'\n')*(self.letterbox+1)
+        letterbox_lower = (' '*self.screen_width+'\n')*(self.letterbox-1)
         l = ''
-        for line in self.lines:
-            l += ''.join(line) + '\n'
+        for row in self.buffer.buffer:
+            # Replace None with ' '
+            for i, c in enumerate(row):
+                if c == None:
+                    row[i] = ' '
+            l += ' '*self.pillarbox + ''.join(row) + ' '*self.pillarbox + '\n'
+        l = letterbox_upper + l + letterbox_lower
+
         # Reset cursor position
         for i in range(self.height-1):
             sys.stdout.write("\033[A")
-        # Print :)
-        print(l[0:-1], end='\r', flush=True)
 
-    def clear_buffer(self):
-        for buffer in self.buffers:
-            buffer.clear_buffer()
+        # Print line
+        print(l[0:-1], end='\r', flush=True)
 
     def clear_screen(self):
         # clear screen
@@ -186,9 +199,9 @@ class Engine:
         # Update clock
         self.time = time.time()
         # Update sprites
-        for b in self.buffers:
-            for s in b.sprites:
-                s.tick()
+        for layer in self.layers:
+            for sprite in layer.sprites:
+                sprite.tick()
         # Empty the buffer
-        self.clear_buffer()
+        self.buffer.clear()
         self.render()
